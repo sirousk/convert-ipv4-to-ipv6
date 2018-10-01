@@ -14,14 +14,17 @@ def header4to6 (ipheader):
 
 def convert_ipv4_to_ipv6 (pkt):
   ether = Ether(type=0x86DD, src=pkt.src, dst=pkt.dst)
-  header6 = header4to6(pkt['IP'])
-  if (pkt.haslayer('TCP')):
-    newpkt = ether /header6 / pkt['TCP'] / pkt['TCP'].payload
-  elif (pkt.haslayer('UDP')):
-    newpkt = ether /header6 / pkt['UDP'] / pkt['UDP'].payload
+  if(pkt.haslayer('IP')):
+    header6 = header4to6(pkt['IP'])
+    if (pkt.haslayer('TCP')):
+      newpkt = ether /header6 / pkt['TCP'] / pkt['TCP'].payload
+    elif (pkt.haslayer('UDP')):
+      newpkt = ether /header6 / pkt['UDP'] / pkt['UDP'].payload
+    else:
+      newpkt = ether/header6/pkt['IP'].payload;
+    return newpkt
   else:
-    newpkt = ether/header6/pkt['IP'].payload;
-  return newpkt;
+    return pkt
 
 IPs = {};
 def gen_ipv6_header(baseIpv4=None):
